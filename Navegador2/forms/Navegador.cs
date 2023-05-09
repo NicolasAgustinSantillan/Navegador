@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -23,7 +17,18 @@ namespace Navegador2.forms
 
         private void Navegador_Load(object sender, EventArgs e)
         {
-            webBrowser1.Navigate(urlBase);
+            this.InitBrowser();
+        }
+
+        private async Task webBrowser1Initizated()
+        {
+            await webBrowser1.EnsureCoreWebView2Async(null);
+        }
+
+        private async void InitBrowser()
+        {
+            await this.webBrowser1Initizated();
+            webBrowser1.CoreWebView2.Navigate(this.urlBase);
         }
     }
 }

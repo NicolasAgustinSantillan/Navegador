@@ -1,11 +1,14 @@
 ﻿using Navegador2.forms;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -16,11 +19,10 @@ namespace Navegador2
     public partial class Contenedor_frm : Form
     {
         private List<string> listaUrls;
-        private int links = 0;
         private int contador = 0;
         private int columnas;
-        private int anchoPantalla;
-        private int altoPantalla = 1039;
+        private int anchoPantalla = 1920;
+        private int altoPantalla = 1040;
         public Contenedor_frm()
         {
             InitializeComponent();
@@ -36,23 +38,17 @@ namespace Navegador2
         {
             listaUrls = new List<string>();
 
-            using (StreamReader leer = new StreamReader(@"./urls.txt"))
+            NameValueCollection dictionaryUrls = ConfigurationManager.AppSettings;
+
+            foreach(var url in dictionaryUrls)
             {
-                while (!leer.EndOfStream)
-                    listaUrls.Add(leer.ReadLine());
-
-                links = listaUrls.Count;
-
-                if (links % 2 != 0)
-                {
-                    listaUrls.Add("https://www.google.com.ar");
-                    links++;
-                }
+                var key = url;
+                this.listaUrls.Add(ConfigurationManager.AppSettings[key.ToString()]);
             }
-            using (StreamReader leer = new StreamReader(@"./resolucionPantallaSoloAncho(ejemplo-1920).txt"))
+
+            if (this.listaUrls.Count % 2 != 0)
             {
-                while (!leer.EndOfStream)
-                    anchoPantalla = Convert.ToInt32(leer.ReadLine());
+                listaUrls.Add("https://www.google.com.ar");
             }
 
             this.Size = new Size(anchoPantalla, altoPantalla);
@@ -60,7 +56,7 @@ namespace Navegador2
 
         private void setearPaneles()
         {
-            columnas = (links / 2);
+            columnas = (this.listaUrls.Count / 2);
             this.tableLayoutPanel1.ColumnCount = columnas;
 
             for (int i = 0; i < columnas; i++)
